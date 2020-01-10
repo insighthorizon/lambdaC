@@ -80,17 +80,36 @@ t_fun three(t_fun s){
     return succ((t_fun){two}, s); }
 
 
+// def pred = λn.(((iszero n) zero) (n select_second))
+t_fun pred(t_fun n){
+    return iszero(n).fun( (t_fun){zero}, n.fun((t_fun){select_second}) ); }
+/* def add2 f x y =
+                if iszero y
+		then x
+		else f f (succ x) (pred y) */
+
+t_fun add2(t_fun f, t_fun x, t_fun y){ // FAIL: Cannot have run-time succ function (pred works, because n contains reference to preexisting predecessor, but succ constructs completely new number)
+    return cond(x, f.fun(f, succ(x,dsgasdg ), pred(y)), iszero(y));
+}
+// def add x y = add2 add2
+t_fun add(t_fun x, t_fun y){
+    return add2((t_fun){add2}, x, y); }
+
+
 // TEST CODE
 int main(int argc, char *argv[]) {
-    void * expected = (void *)/* plug expected evaluation result in here >>> */ true /* <<< */;
     void * result = (void *)
-	   /* ___EVALUATION OF FUNCTIONS down here:___*/
+	/* ===EVALUATION OF FUNCTIONS down here:=== */
 	
-	iszero
+	pred
 	((t_fun){zero})
 
-	   /* ___EVALUATION OF FUNCTIONS END___*/ .fun;
-	
+	/* ===EVALUATION OF FUNCTIONS END=== */
+	.fun;
+    void * expected = (void *)
+
+	/* plug expected evaluation result in here >>> */ zero /* <<< */;
+    
     printf("Expecting: %p\nReceived:  %p\n", expected, result);
     printf("===============\n");
     if (expected == result)
